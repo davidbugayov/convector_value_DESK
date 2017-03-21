@@ -55,6 +55,73 @@ namespace WindowsFormsApplication1
             {
                 String fileName = "Чистый" + openFileDialog1.SafeFileName;
                 TextWriter tw = new StreamWriter(fileName);
+                int n, m, i;
+                m = 2;
+                if (list[0].Contains("var"))
+                {
+                    n = list.Count - 2;
+                    i = 1;
+                }
+                else
+                {
+                    n = list.Count - 1;
+                    i = 0;
+                }
+                
+                Double[][] listDouble = new Double[n][];
+                for (int x = 0; x < listDouble.Length; x++)
+                {
+                    listDouble[x] = new Double[m];
+                }
+                Char delimiter = ';';
+                int j = 0;
+                for ( ;i < list.Count -1; i++) {
+                    String[] substrings = list[i].Split(delimiter);
+                    Double.TryParse(substrings[0], out listDouble[j][0]);
+                    Double.TryParse(substrings[1], out listDouble[j][1]);
+                    j++;
+                }
+                List<String> clearList = new List<string>();
+                bool saveValue = false;
+                bool firstValue=true;
+                for (int k = 0; k < listDouble.Length; k++) {
+                    if (listDouble[k][0] < -1)
+                    {
+                        if (!saveValue) {
+                            for (int p = k; p < k + 5; p++)
+                            {
+                                if (listDouble[p][0] < -1)
+                                {
+                                    saveValue = true;
+                                }
+                                else {
+                                    saveValue = false;
+                                    break;
+                                }
+                            } }
+                        if (saveValue)
+                            {
+                            int d = k;
+                            if (firstValue) {
+                                if (k - 1 >= 0)
+                                    d = k - 1;
+                                firstValue = false;
+                            }
+                            clearList.Add(listDouble[d][0] + " ; " + listDouble[d][1]);
+                            }
+
+                    }
+                    else {
+                        if (saveValue) {
+                            firstValue = true;
+                            clearList.Add(listDouble[k][0] + " ; " + listDouble[k][1]);
+                            goto suda;
+                        }
+                        saveValue = false;
+
+                    }
+                }
+                suda:
                 MessageBox.Show(fileName);
                 saveFileDialog1.Filter = "Текстовый файл | *.txt";
                 saveFileDialog1.DefaultExt = "txt";
@@ -62,7 +129,7 @@ namespace WindowsFormsApplication1
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                 {
                     StreamWriter writer = new StreamWriter(saveFileDialog1.OpenFile());
-                       foreach(String li in list)
+                       foreach(String li in clearList)
                         writer.WriteLine(li);
                     writer.Dispose();
                     writer.Close();
